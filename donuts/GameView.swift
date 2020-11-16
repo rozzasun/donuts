@@ -8,14 +8,7 @@
 import SwiftUI
 
 enum Direction: CaseIterable {
-    case UP
-    case DOWN
-    case LEFT
-    case RIGHT
-    case UPRIGHT
-    case UPLEFT
-    case DOWNRIGHT
-    case DOWNLEFT
+    case UP, DOWN, LEFT, RIGHT, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT
 
     var vecDir:(Int, Int) {
         switch self {
@@ -65,11 +58,12 @@ class GridBuilder: ObservableObject {
         }
 
         let chars = "aaabcdeeefghiiijklllmnooopqrrssstttuuuvwxyz"
+        let chars1 = "abcdefghijklmnopqrstuvwxyz"
 
         for r in (0..<self.totalRows) {
             for c in (0..<self.totalColumns) {
                 if self.grid[c][r] == "-" {
-                    self.grid[c][r] = chars.randomElement() ?? "-"
+                    self.grid[c][r] = chars1.randomElement() ?? "-"
                 }
             }
         }
@@ -137,6 +131,7 @@ struct GameView: View {
     var body: some View {
         ZStack {
             Image("purplebackground")
+            LinearGradient(gradient: Gradient(colors: [.pink, .purple]), startPoint: .topLeading, endPoint: .trailing)
 
             VStack {
                 SearchView(grid: gridBuilder.grid)
@@ -153,7 +148,7 @@ struct GameView: View {
                     Text("SHUFFLE")
                 })
                 .padding(10)
-                .background(Color.purple)
+                .background(Color.black)
                 .foregroundColor(.white)
                 .cornerRadius(5)
             }

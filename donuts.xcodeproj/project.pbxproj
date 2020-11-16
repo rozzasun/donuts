@@ -15,6 +15,7 @@
 		D2088B2D2526807800BAD30C /* donutsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2088B2C2526807800BAD30C /* donutsUITests.swift */; };
 		D24107C6255E20EC00764116 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24107C5255E20EC00764116 /* SearchView.swift */; };
 		D24107CB255E391A00764116 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24107CA255E391A00764116 /* GameView.swift */; };
+		D2B3553E2561A70B00A34684 /* TestUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3553D2561A70B00A34684 /* TestUI.swift */; };
 		D2E088CB255B698C002988B4 /* PictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E088CA255B698C002988B4 /* PictureView.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 		D2088B2E2526807800BAD30C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D24107C5255E20EC00764116 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		D24107CA255E391A00764116 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		D2B3553D2561A70B00A34684 /* TestUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUI.swift; sourceTree = "<group>"; };
 		D2E088CA255B698C002988B4 /* PictureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,6 +111,7 @@
 				D2088B152526807800BAD30C /* Preview Content */,
 				D24107C5255E20EC00764116 /* SearchView.swift */,
 				D24107CA255E391A00764116 /* GameView.swift */,
+				D2B3553D2561A70B00A34684 /* TestUI.swift */,
 			);
 			path = donuts;
 			sourceTree = "<group>";
@@ -269,6 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D24107C6255E20EC00764116 /* SearchView.swift in Sources */,
+				D2B3553E2561A70B00A34684 /* TestUI.swift in Sources */,
 				D2E088CB255B698C002988B4 /* PictureView.swift in Sources */,
 				D2088B122526807600BAD30C /* ContentView.swift in Sources */,
 				D2088B102526807600BAD30C /* donutsApp.swift in Sources */,
