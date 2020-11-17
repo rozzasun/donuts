@@ -12,7 +12,7 @@ struct SearchView: View {
     private var columnsNum: Int = 10
 
     private var chars: [[Character]]
-
+    @Binding var words: [String]
 
     @State private var clicked: [Bool] = Array.init(repeating: false, count: 100)
 
@@ -21,14 +21,17 @@ struct SearchView: View {
     @GestureState private var location: CGPoint = .zero
 
     @State private var selected: [(Int, Int)] = []
+    @State private var correctSelections: [[(Int, Int)]] = []
     @State private var highlighted: (Int, Int)? = nil
 
 
-    init(grid:[[Character]]) {
+    init(grid:[[Character]], words: Binding<[String]>) {
         self.rowsNum = grid.count
         self.columnsNum = grid[0].count
 
         self.chars = grid
+
+        self._words = words
 
         self.gridColumns = Array.init(repeating: GridItem(.flexible(minimum: 25, maximum: 25), spacing: 0), count: 10)
     }
@@ -74,10 +77,14 @@ struct SearchView: View {
         }
     }
 
-    func validateWord() {
+    func validateSelection() -> Void {
         var word = selected.map({
             String(chars[$0.0][$0.1])
         }).joined()
+
+//        if words.contains(word) {
+            self.correctSelections.append(self.selected)
+//        }
     }
 
     var body: some View {
@@ -115,7 +122,7 @@ struct SearchView: View {
                         state = value.location
                     }.onEnded {_ in
                         self.highlighted = nil
-                        validateWord()
+                        validateSelection()
                         self.selected = []
                     })
     }
@@ -127,7 +134,7 @@ struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             Color.black
-            SearchView(grid: GridBuilder.init(words: self.words, rows: 10, columns: 10).build())
+            SearchView(grid: GridBuilder.init(words: self.words, rows: 10, columns: 10).build(), words: .constant(["Hat", "Hallo", "Jasmine"]))
         }
     }
 }

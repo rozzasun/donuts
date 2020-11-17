@@ -31,7 +31,7 @@ class GridBuilder: ObservableObject {
     private var totalRows:Int
     private var totalColumns:Int
 
-    init(words:[String], rows:Int, columns:Int) {
+    init(words: [String], rows:Int, columns:Int) {
         self.words = words
         self.grid = Array.init(repeating: Array.init(repeating: "-", count: columns), count: rows)
         self.totalRows = rows
@@ -41,7 +41,7 @@ class GridBuilder: ObservableObject {
     func build() -> [[Character]] {
         var generated = false
         trialLoop: for _ in (0...10) {
-            self.grid = Array.init(repeating: Array.init(repeating: "-", count: self.totalColumns), count: self.totalRows)
+            self.grid = Array.init(repeating: Array.init(repeating: "*", count: self.totalColumns), count: self.totalRows)
             words.shuffle()
             for word in words {
                 if !insertWord(word: word) {
@@ -53,7 +53,7 @@ class GridBuilder: ObservableObject {
         }
 
         if !generated {
-            self.grid = Array.init(repeating: Array.init(repeating: "-", count: self.totalColumns), count: self.totalRows)
+            self.grid = Array.init(repeating: Array.init(repeating: "*", count: self.totalColumns), count: self.totalRows)
             return self.grid
         }
 
@@ -62,8 +62,8 @@ class GridBuilder: ObservableObject {
 
         for r in (0..<self.totalRows) {
             for c in (0..<self.totalColumns) {
-                if self.grid[c][r] == "-" {
-                    self.grid[c][r] = chars1.randomElement() ?? "-"
+                if self.grid[c][r] == "*" {
+                    self.grid[c][r] = chars1.randomElement() ?? "*"
                 }
             }
         }
@@ -108,7 +108,7 @@ class GridBuilder: ObservableObject {
                 return false
             }
 
-            if self.grid[curY][curX] == "-" || self.grid[curY][curX] == char {
+            if self.grid[curY][curX] == "*" || self.grid[curY][curX] == char {
                 curX += xDir
                 curY += yDir
             } else {
@@ -120,11 +120,13 @@ class GridBuilder: ObservableObject {
 }
 
 struct GameView: View {
-    private let words = ["horses", "house", "olaf", "hello", "hallelujah", "bottle", "rosa"]
-    @ObservedObject private var gridBuilder:GridBuilder
+    @State private var words: [String] = ["horses", "house", "olaf", "hello", "hallelujah", "bottle", "rosa"]
+
+    @ObservedObject private var gridBuilder:GridBuilder = GridBuilder.init(words: [], rows: 10, columns: 10)
 
     init() {
-        gridBuilder = GridBuilder.init(words: self.words, rows: 10, columns: 10)
+        self.words = ["horses", "house", "olaf", "hello", "hallelujah", "bottle", "rosa"]
+        self.gridBuilder = GridBuilder.init(words: words, rows: 10, columns: 10)
         _ = gridBuilder.build()
     }
 
@@ -134,7 +136,7 @@ struct GameView: View {
             LinearGradient(gradient: Gradient(colors: [.pink, .purple]), startPoint: .topLeading, endPoint: .trailing)
 
             VStack {
-                SearchView(grid: gridBuilder.grid)
+                SearchView(grid: gridBuilder.grid, words: $words)
 
                 LazyVGrid(columns: [GridItem(.flexible(maximum: 100)), GridItem(.flexible(maximum: 100))], content: {
                     ForEach(words, id: \.self) { word in
