@@ -24,26 +24,73 @@ enum Direction: CaseIterable {
     }
 }
 
+class WordsAPI {
+    var words = ["jewel", "dozen", "witness", "slight", "polite", "curious", "defeat", "ambitious", "confidence", "sneaky", "laugh", "theory"]
+
+    init() {
+        getWords()
+    }
+
+    private func getWords() {
+        guard let url = URL(string: "https://raw.githubusercontent.com/bevacqua/correcthorse/master/wordlist.json") else { return }
+
+        let session = URLSession.shared
+
+        session.dataTask(with: url) { (data, response, error) in
+            if let data = data {
+                if let jsonWords = try? JSONSerialization.jsonObject(with: data, options: []) {
+                    DispatchQueue.main.async {
+                        self.words = jsonWords as? [String] ?? self.words
+                        print(self.words)
+                    }
+                    return
+                }
+            }
+            print("Fetch failed")
+        }.resume()
+    }
+
+    func nRandomWords(n: Int, minLength: Int = 4, maxLength: Int = 10) -> [String] {
+        var randomWords: [String] = []
+
+        for _ in 0...100 {
+            let tmp: String = words.randomElement()!
+
+            if minLength...maxLength ~= tmp.count && !randomWords.contains(tmp) {
+                randomWords.append(tmp)
+            }
+
+            if randomWords.count >= n { return randomWords }
+        }
+
+        return randomWords
+    }
+}
+
 class GridBuilder: ObservableObject {
     @Published var grid = [[Character]]()
 
     private var words:[String]
     private var totalRows:Int
     private var totalColumns:Int
+    private var wordsAPI: WordsAPI
 
     init(words: [String], rows:Int, columns:Int) {
+        self.wordsAPI = WordsAPI()
         self.words = words
         self.grid = Array.init(repeating: Array.init(repeating: "-", count: columns), count: rows)
         self.totalRows = rows
         self.totalColumns = columns
     }
 
-    func build() -> [[Character]] {
+    func build(words: [String]) -> [[Character]] {
+        self.words = words
+        print("building: \(words)")
         var generated = false
         trialLoop: for _ in (0...10) {
             self.grid = Array.init(repeating: Array.init(repeating: "*", count: self.totalColumns), count: self.totalRows)
-            words.shuffle()
-            for word in words {
+
+            for word in words.shuffled() {
                 if !insertWord(word: word) {
                     continue trialLoop
                 }
@@ -58,12 +105,11 @@ class GridBuilder: ObservableObject {
         }
 
         let chars = "aaabcdeeefghiiijklllmnooopqrrssstttuuuvwxyz"
-        let chars1 = "abcdefghijklmnopqrstuvwxyz"
 
         for r in (0..<self.totalRows) {
             for c in (0..<self.totalColumns) {
                 if self.grid[c][r] == "*" {
-                    self.grid[c][r] = chars1.randomElement() ?? "*"
+                    self.grid[c][r] = chars.randomElement() ?? "*"
                 }
             }
         }
@@ -120,14 +166,31 @@ class GridBuilder: ObservableObject {
 }
 
 struct GameView: View {
-    @State private var words: [String] = ["horses", "house", "olaf", "hello", "hallelujah", "bottle", "rosa"]
+    @State private var words: [String] = WordsAPI().nRandomWords(n: 10)
+
+    @State private var foundWords: [String] = []
+
+    @State var selected: [(Int, Int)] = []
+    @State var correctSelections: [[(Int, Int)]] = []
 
     @ObservedObject private var gridBuilder:GridBuilder = GridBuilder.init(words: [], rows: 10, columns: 10)
 
+    @State var searchView: SearchView? = nil
+
+    private var wordsAPI: WordsAPI = WordsAPI()
+
     init() {
-        self.words = ["horses", "house", "olaf", "hello", "hallelujah", "bottle", "rosa"]
         self.gridBuilder = GridBuilder.init(words: words, rows: 10, columns: 10)
-        _ = gridBuilder.build()
+        _ = gridBuilder.build(words: self.words)
+
+        self.words = wordsAPI.nRandomWords(n: 10)
+    }
+
+    func resetGame() -> Void {
+        self.foundWords = []
+        self.words = wordsAPI.nRandomWords(n: 10)
+        _ = gridBuilder.build(words: self.words)
+        self.searchView?.reset()
     }
 
     var body: some View {
@@ -136,16 +199,17 @@ struct GameView: View {
             LinearGradient(gradient: Gradient(colors: [.pink, .purple]), startPoint: .topLeading, endPoint: .trailing)
 
             VStack {
-                SearchView(grid: gridBuilder.grid, words: $words)
+                SearchView(grid: gridBuilder.grid, words: $words, foundWords: $foundWords, selected: $selected, correctSelections: $correctSelections)
 
                 LazyVGrid(columns: [GridItem(.flexible(maximum: 100)), GridItem(.flexible(maximum: 100))], content: {
                     ForEach(words, id: \.self) { word in
                         Text(word)
+                            .strikethrough(foundWords.contains(word))
                     }
                 })
 
                 Button(action: {
-                    _ = gridBuilder.build()
+                    self.resetGame()
                 }, label: {
                     Text("SHUFFLE")
                 })

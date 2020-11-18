@@ -158,6 +158,8 @@
 			dependencies = (
 			);
 			name = donuts;
+			packageProductDependencies = (
+			);
 			productName = donuts;
 			productReference = D2088B0C2526807600BAD30C /* donuts.app */;
 			productType = "com.apple.product-type.application";
@@ -229,6 +231,8 @@
 				Base,
 			);
 			mainGroup = D2088B032526807600BAD30C;
+			packageReferences = (
+			);
 			productRefGroup = D2088B0D2526807600BAD30C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
