@@ -13,6 +13,7 @@
 		D2088B172526807800BAD30C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2088B162526807800BAD30C /* Preview Assets.xcassets */; };
 		D2088B222526807800BAD30C /* donutsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2088B212526807800BAD30C /* donutsTests.swift */; };
 		D2088B2D2526807800BAD30C /* donutsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2088B2C2526807800BAD30C /* donutsUITests.swift */; };
+		D233840E2564ECDD002E06C6 /* WordsGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D233840D2564ECDD002E06C6 /* WordsGenerator.swift */; };
 		D24107C6255E20EC00764116 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24107C5255E20EC00764116 /* SearchView.swift */; };
 		D24107CB255E391A00764116 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24107CA255E391A00764116 /* GameView.swift */; };
 		D2B3553E2561A70B00A34684 /* TestUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B3553D2561A70B00A34684 /* TestUI.swift */; };
@@ -49,6 +50,7 @@
 		D2088B282526807800BAD30C /* donutsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = donutsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2088B2C2526807800BAD30C /* donutsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = donutsUITests.swift; sourceTree = "<group>"; };
 		D2088B2E2526807800BAD30C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D233840D2564ECDD002E06C6 /* WordsGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordsGenerator.swift; sourceTree = "<group>"; };
 		D24107C5255E20EC00764116 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		D24107CA255E391A00764116 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		D2B3553D2561A70B00A34684 /* TestUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUI.swift; sourceTree = "<group>"; };
@@ -103,14 +105,14 @@
 		D2088B0E2526807600BAD30C /* donuts */ = {
 			isa = PBXGroup;
 			children = (
+				D23384092564EAD4002E06C6 /* Views */,
+				D23384072564E7B5002E06C6 /* Models */,
 				D2088B0F2526807600BAD30C /* donutsApp.swift */,
 				D2E088CA255B698C002988B4 /* PictureView.swift */,
 				D2088B112526807600BAD30C /* ContentView.swift */,
 				D2088B132526807800BAD30C /* Assets.xcassets */,
 				D2088B182526807800BAD30C /* Info.plist */,
 				D2088B152526807800BAD30C /* Preview Content */,
-				D24107C5255E20EC00764116 /* SearchView.swift */,
-				D24107CA255E391A00764116 /* GameView.swift */,
 				D2B3553D2561A70B00A34684 /* TestUI.swift */,
 			);
 			path = donuts;
@@ -140,6 +142,23 @@
 				D2088B2E2526807800BAD30C /* Info.plist */,
 			);
 			path = donutsUITests;
+			sourceTree = "<group>";
+		};
+		D23384072564E7B5002E06C6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D233840D2564ECDD002E06C6 /* WordsGenerator.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D23384092564EAD4002E06C6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D24107CA255E391A00764116 /* GameView.swift */,
+				D24107C5255E20EC00764116 /* SearchView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -280,6 +299,7 @@
 				D2E088CB255B698C002988B4 /* PictureView.swift in Sources */,
 				D2088B122526807600BAD30C /* ContentView.swift in Sources */,
 				D2088B102526807600BAD30C /* donutsApp.swift in Sources */,
+				D233840E2564ECDD002E06C6 /* WordsGenerator.swift in Sources */,
 				D24107CB255E391A00764116 /* GameView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

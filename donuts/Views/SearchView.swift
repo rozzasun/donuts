@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct SearchView: View {
-    private var rowsNum: Int = 10
-    private var columnsNum: Int = 10
+    var winAction: (() -> Void)?
+    private var rowsNum: Int = 12
+    private var columnsNum: Int = 12
 
     private var chars: [[Character]]
     @Binding var words: [String]
@@ -17,13 +18,14 @@ struct SearchView: View {
 
     @State private var clicked: [Bool] = Array.init(repeating: false, count: 100)
 
-    @State private var gridColumns: [GridItem] = Array.init(repeating: GridItem(.flexible(minimum: 25, maximum: 25), spacing: 0), count: 10)
+    @State private var gridColumns: [GridItem] = Array.init(repeating: GridItem(.flexible(minimum: 25, maximum: 25), spacing: 0), count: 12)
 
     @GestureState private var location: CGPoint = .zero
 
     @Binding var selected: [(Int, Int)]
     @Binding var correctSelections: [[(Int, Int)]]
     @State private var highlighted: (Int, Int)? = nil
+    @State private var curWord: String = ""
 
     init(grid:[[Character]], words: Binding<[String]>, foundWords: Binding<[String]>, selected: Binding<[(Int, Int)]>, correctSelections: Binding<[[(Int, Int)]]>) {
         self.rowsNum = grid.count
@@ -36,7 +38,7 @@ struct SearchView: View {
         self._selected = selected
         self._correctSelections = correctSelections
 
-        self.gridColumns = Array.init(repeating: GridItem(.flexible(minimum: 25, maximum: 25), spacing: 0), count: 10)
+        self.gridColumns = Array.init(repeating: GridItem(.flexible(minimum: 25, maximum: 25), spacing: 0), count: columnsNum)
     }
 
     func reset() {
@@ -95,19 +97,43 @@ struct SearchView: View {
             String(chars[$0.0][$0.1])
         }).joined()
 
+        var valid: String? = nil
+
         if words.contains(word) {
-            self.correctSelections.append(self.selected)
-            self.foundWords.append(word)
+            valid = word
         } else if words.contains(reversed) {
-            self.correctSelections.append(self.selected)
-            self.foundWords.append(reversed)
+            valid = reversed
+        } else {
+            return
         }
+
+        self.correctSelections.append(self.selected)
+        self.foundWords.append(valid!)
+
+        if foundWords.count == words.count {
+            winAction!()
+            return
+        }
+    }
+
+    func onWin(perform action: @escaping () -> Void) -> Self {
+        var copy = self
+        copy.winAction = action
+        return copy
+    }
+
+    func updateDisplayWord() -> Void {
+        self.curWord = selected.map({
+            String(chars[$0.0][$0.1])
+        }).joined()
     }
 
     var body: some View {
         let highlightingWord = DragGesture(minimumDistance: 0, coordinateSpace: .global)
                 .updating($location) { (value, state, transaction) in
                     state = value.location
+                }.onChanged { _ in
+                    updateDisplayWord()
                 }.onEnded {_ in
                     DispatchQueue.main.async {
                         validateSelection()
@@ -115,21 +141,44 @@ struct SearchView: View {
                         self.highlighted = nil
                     }
                 }
-        LazyVGrid(columns: gridColumns, spacing: 2, content: {
-            ForEach((0..<(rowsNum * columnsNum)), id: \.self) { i in
-                let coord: (Int, Int) = (i / 10, i % 10)
-                let backgroundColor = self.rectReader(row: coord.0, column: coord.1)
-                Text(String(chars[coord.0][coord.1]).uppercased())
-                        .fontWeight(self.selected.contains(where: {$0 == coord}) ? .bold : .none)
-                        .padding(4)
-                        .frame(minWidth: 25, maxWidth: 25, minHeight: 0, maxHeight: 200)
-                        .foregroundColor(.white)
-                        .background(backgroundColor)
-                        .cornerRadius(5)
-                        .scaleEffect(self.selected.contains(where: {$0 == coord}) ? 1.5 : 1)
+        VStack {
+            HStack {
+                Spacer()
+
+                Text("Found " + String(foundWords.count) + "/" + String(words.count))
+                    .bold()
+                Spacer()
+
+                if curWord.count > 0 {
+                    Text(curWord.capitalized)
+                    Spacer()
+                }
             }
-        })
-        .gesture(highlightingWord)
+            .font(.title2)
+            .foregroundColor(.white)
+            .padding([.top, .bottom], 5)
+            .background(Color.orange.opacity(0.5))
+
+            LazyVGrid(columns: gridColumns, spacing: 2, content: {
+                ForEach((0..<(rowsNum * columnsNum)), id: \.self) { i in
+                    let coord: (Int, Int) = (i / columnsNum, i % columnsNum)
+                    let backgroundColor = self.rectReader(row: coord.0, column: coord.1)
+                    Text(String(chars[coord.0][coord.1]).uppercased())
+                            .fontWeight(self.selected.contains(where: {$0 == coord}) ? .bold : .none)
+                            .padding(4)
+                            .frame(minWidth: 25, maxWidth: 25, minHeight: 0, maxHeight: 200)
+                            .foregroundColor(.white)
+                            .background(backgroundColor)
+                            .cornerRadius(5)
+                            .scaleEffect(self.selected.contains(where: {$0 == coord}) ? 1.5 : 1)
+                }
+            })
+            .gesture(highlightingWord)
+            .padding([.top, .bottom], 10)
+            .background(Color.white.opacity(0.5))
+            .cornerRadius(10.0)
+            .padding([.trailing, .leading], 20)
+        }
     }
 }
 
@@ -139,7 +188,7 @@ struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             Color.black
-            SearchView(grid: GridBuilder.init(words: self.words, rows: 10, columns: 10).build(words: self.words), words: .constant(["Hat", "Hallo", "Jasmine"]), foundWords: .constant([]), selected: .constant([]), correctSelections: .constant([]))
+            SearchView(grid: GridBuilder.init(words: self.words, rows: 12, columns: 12).build(words: self.words), words: .constant(["Hat", "Hallo", "Jasmine"]), foundWords: .constant([]), selected: .constant([]), correctSelections: .constant([]))
         }
     }
 }
