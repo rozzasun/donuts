@@ -177,15 +177,15 @@ struct SearchView: View {
                     .bold()
                 Spacer()
 
-                if curWord.count > 0 {
-                    Text(curWord.capitalized)
+                if selected.count > 0 {
+                    Text(curWord.uppercased())
                     Spacer()
                 }
             }
             .font(.title2)
             .foregroundColor(.white)
             .padding([.top, .bottom], 5)
-            .background(Color.orange.opacity(0.5))
+            .background(Color.orange.opacity(0.7))
 
             LazyVGrid(columns: gridColumns, spacing: 2, content: {
                 ForEach((0..<(rowsNum * columnsNum)), id: \.self) { i in
@@ -199,6 +199,7 @@ struct SearchView: View {
                             .background(backgroundColor)
                             .cornerRadius(5)
                             .scaleEffect(self.selected.contains(where: {$0 == coord}) ? 1.5 : 1)
+                        .font(.system(size: 16))
                 }
             })
             .gesture(highlightingWord)

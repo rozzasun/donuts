@@ -144,26 +144,37 @@ struct GameView: View {
 
     func resetGame() -> Void {
         self.foundWords = []
-        self.words = wordsGenerator.generate(n: 10)
+        self.words = wordsGenerator.generate(n: 12, minLength: 6, maxLength: min(rows, columns))
         _ = gridBuilder.build(words: self.words)
         self.selected = []
         self.correctSelections = []
+        self.showWinPopup = false
     }
 
     var body: some View {
         let winPopup = ZStack {
-            Color.white.opacity(0.8)
+            Color.orange
             VStack {
+                Spacer()
                 Text("🎉 All words found 🎉")
+                    .foregroundColor(.white)
+                    .font(.system(size: 25))
+                    .bold()
                 Spacer()
                 Button(action: {
                     resetGame()
                 }, label: {
-                    Text("Replay")
+                    Image.init(systemName: "play.fill")
+                    Text("REPLAY")
                 })
+                .padding(10)
+                .foregroundColor(.white)
+                .background(Capsule()
+                                .stroke(LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 2))
+                Spacer()
             }.padding()
         }
-        .frame(width: 300, height: 200)
+        .frame(width: 300, height: 150)
         .cornerRadius(20).shadow(radius: 20)
 
         ZStack {
@@ -180,22 +191,31 @@ struct GameView: View {
                     ForEach(words, id: \.self) { word in
                         Text(word)
                             .strikethrough(foundWords.contains(word))
-                            .font(.system(size: 25))
+                            .font(.system(size: 24))
+                            .foregroundColor(.white)
                     }
+
                 })
 
                 Button(action: {
                     self.resetGame()
                 }, label: {
+                    Image(systemName: "shuffle")
                     Text("SHUFFLE")
+                        .font(.title2)
                 })
-                .padding(10)
-                .background(Color.black)
+                .padding(15)
+                .background(Capsule()
+                                .stroke(LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.5), Color.white.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 2))
                 .foregroundColor(.white)
-                .cornerRadius(5)
+                .cornerRadius(10)
+                .padding()
             }
 
-            if showWinPopup { winPopup }
+            if showWinPopup {
+                Color.black.opacity(0.2).edgesIgnoringSafeArea(.all)
+                winPopup
+            }
         }
         .font(.custom("Gill Sans", size: 18))
     }
