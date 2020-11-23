@@ -51,6 +51,7 @@ struct SearchView: View {
         return GeometryReader { (geometry) -> AnyView in
             if geometry.frame(in: .global).contains(self.location) {
                 DispatchQueue.main.async {
+                    selected.removeAll(where: { $0 == (row, column) })
                     self.selected.append((row, column))
                     straightenLine()
                 }
@@ -62,30 +63,57 @@ struct SearchView: View {
     }
 
     func straightenLine() -> Void {
-        if selected.count > 1 {
-            var dirX: Int = selected.last!.0 - selected.first!.0
-            if dirX != 0 {
-                dirX = dirX < 0 ? -1 : 1
-            }
+        if selected.count < 1 { return }
+        var newSelected: [(Int, Int)] = [selected.first!]
+        var closestDistance: Double = 10000.0
 
-            var dirY = abs(selected.last!.1) - selected.first!.1
-            if dirY != 0 {
-                dirY = dirY < 0 ? -1 : 1
-            }
-
-            var (x, y) = selected.first!
-
-            var newSelected: [(Int, Int)] = []
-            for point in selected {
-                if (x, y) == point {
-                    newSelected.append((x, y))
-                    x += dirX
-                    y += dirY
-                }
-            }
-
-            self.selected = newSelected
+        var dirX: Int = selected.last!.0 - selected.first!.0
+        if dirX != 0 {
+            dirX = dirX < 0 ? -1 : 1
         }
+
+        var dirY = abs(selected.last!.1) - selected.first!.1
+        if dirY != 0 {
+            dirY = dirY < 0 ? -1 : 1
+        }
+
+        let possibleDirs = Direction.allCases.filter {
+            [0, dirX].contains($0.vecDir.0) && [0, dirY].contains($0.vecDir.1)
+        }
+
+        let xRange = min(selected.first!.0, selected.last!.0)...max(selected.first!.0, selected.last!.0)
+
+        let yRange = min(selected.first!.1, selected.last!.1)...max(selected.first!.1, selected.last!.1)
+
+        for d in possibleDirs {
+            var lastComp = 1000.0, x = selected.first!.0, y = selected.first!.1
+            var tmpLine: [(Int, Int)] = []
+
+            while xRange ~= x && yRange ~= y {
+                tmpLine.append((x, y))
+
+                let dist = distanceBetween(a: (x, y), b: selected.last!)
+
+                if dist > lastComp {
+                    break
+                }
+
+                if dist < closestDistance {
+                    newSelected = tmpLine
+                    closestDistance = dist
+                }
+
+                lastComp = dist
+                x += d.vecDir.0
+                y += d.vecDir.1
+            }
+        }
+
+        self.selected = newSelected
+    }
+
+    func distanceBetween(a: (Int, Int), b: (Int, Int)) -> Double {
+        return sqrt(pow(Double(a.0 - b.0), 2) + pow(Double(a.1 - b.1), 2))
     }
 
     func validateSelection() -> Void {
